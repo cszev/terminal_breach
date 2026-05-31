@@ -94,14 +94,14 @@ body {
 /* scanline sweep */
 #sweep {
   position: fixed;
-  top: -4px; left: 0; right: 0;
-  height: 2px;
-  background: rgba(255,255,255,0.018);
-  animation: sweep 12s linear infinite;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: rgba(255,255,255,0.025);
+  animation: sweep 10s linear infinite;
   pointer-events: none;
   z-index: 9991;
 }
-@keyframes sweep { 0%{top:-4px} 100%{top:100vh} }
+@keyframes sweep { 0%{top:-3px} 100%{top:100vh} }
 
 /* red tint overlay */
 #red-tint {
@@ -117,17 +117,16 @@ body {
 #timer-bar-wrap {
   position: fixed;
   top: 0; left: 0; right: 0;
-  height: 6px;
-  background: #1c1c1c;
-  z-index: 99999;
-  transition: opacity 0.5s;
+  height: 4px;
+  background: #1a1a1a;
+  z-index: 9995;
 }
 #timer-bar {
   height: 100%;
   width: 100%;
-  background: #d0d0d0;
+  background: #b0b0b0;
   transition: width 1s linear, background 2s;
-  box-shadow: 0 0 10px rgba(210,210,210,0.6), 0 0 2px rgba(255,255,255,0.8);
+  box-shadow: 0 0 6px rgba(180,180,180,0.3);
 }
 
 /* ── CRT TOGGLE BUTTON ── */
@@ -495,55 +494,6 @@ table.lookup tr:hover td { background: rgba(255,255,255,0.015); }
 .time-critical { animation: tcrit 0.5s step-end infinite; }
 @keyframes tcrit { 50% { opacity: 0.3; } }
 
-/* ── SOLO MODE SPLIT SCREEN ── */
-#screen-solo {
-  display: none;
-}
-#screen-solo.active {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  min-height: 80vh;
-}
-.solo-pane {
-  padding: 0 12px;
-  border-right: 1px solid var(--border);
-  min-width: 0;
-}
-.solo-pane:last-child { border-right: none; padding-right: 0; }
-.solo-pane-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-.solo-divider {
-  position: relative;
-  grid-column: 1/-1;
-  display: none;
-}
-.solo-mode-badge {
-  position: fixed;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 9px;
-  letter-spacing: 4px;
-  color: var(--dim);
-  border: 1px solid #1e1e1e;
-  padding: 2px 10px;
-  background: var(--bg);
-  z-index: 9994;
-  pointer-events: none;
-}
-@media (max-width: 700px) {
-  #screen-solo.active {
-    grid-template-columns: 1fr;
-  }
-  .solo-pane { border-right: none; border-bottom: 1px solid var(--border); padding: 0 0 16px; margin-bottom: 16px; }
-}
-
 /* ── CONNECTION ID ── */
 .connection-id {
   font-family: 'VT323', monospace;
@@ -622,7 +572,7 @@ table.lookup tr:hover td { background: rgba(255,255,255,0.015); }
 <div id="sweep"></div>
 <div id="red-tint"></div>
 
-<div id="timer-bar-wrap" style="opacity:0"><div id="timer-bar"></div></div>
+<div id="timer-bar-wrap"><div id="timer-bar"></div></div>
 
 <!-- Verdict overlay -->
 <div class="verdict" id="verdict">
@@ -662,12 +612,6 @@ table.lookup tr:hover td { background: rgba(255,255,255,0.015); }
           <div class="hint-text">You face the terminal.<br>Follow the operator's voice.<br>Never see the manual.</div>
         </div>
       </div>
-      <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px">
-        <button onclick="startSoloMode()" style="width:100%;padding:12px;font-size:12px;letter-spacing:4px;border-color:#333;color:var(--dim)">
-          [ SOLO TEST MODE — BOTH PANELS ON ONE SCREEN ]
-        </button>
-        <div class="hint-text" style="margin-top:6px">Agent terminal on the left · Operator manual on the right · No connection needed</div>
-      </div>
     </div>
     <div class="panel" id="join-panel" data-label="AGENT JOIN" style="display:none">
       <div class="status-line">ENTER OPERATOR SESSION CODE</div><br>
@@ -683,31 +627,6 @@ table.lookup tr:hover td { background: rgba(255,255,255,0.015); }
       <div id="wait-status" class="status-line warn blink">AWAITING AGENT...</div>
     </div>
     <div class="log-box" id="log-box"></div>
-  </div>
-
-  <!-- ══ SOLO MODE SCREEN ══ -->
-  <div class="screen" id="screen-solo">
-    <div class="solo-mode-badge">// SOLO TEST MODE</div>
-    <!-- AGENT PANE -->
-    <div class="solo-pane">
-      <div class="solo-pane-header">
-        <span class="role-badge agent">// AGENT TERMINAL</span>
-        <div class="progress-steps" id="solo-agent-steps"></div>
-        <div style="flex:1"></div>
-        <span id="solo-agent-timer" style="font-family:'VT323',monospace;font-size:22px;color:var(--dim);letter-spacing:3px"></span>
-      </div>
-      <div id="solo-agent-area"></div>
-      <div class="log-box" id="solo-log-agent" style="margin-top:10px"></div>
-    </div>
-    <!-- OPERATOR PANE -->
-    <div class="solo-pane">
-      <div class="solo-pane-header">
-        <span class="role-badge operator">// OPERATOR MANUAL</span>
-        <div class="progress-steps" id="solo-operator-steps"></div>
-      </div>
-      <div id="solo-operator-area"></div>
-      <div class="log-box" id="solo-log-operator" style="margin-top:10px"></div>
-    </div>
   </div>
 
   <!-- ══ AGENT SCREEN ══ -->
@@ -917,8 +836,8 @@ function playTick() { playBeep(600, 0.04, 0.03); }
 //  PEER & STATE
 // ═══════════════════════════════════════════════════════════
 let peer, conn, myRole;
-let gameState = { puzzleIndex:0, timeLeft:420, started:false, over:false, score:0 };
-const TOTAL_TIME = 420;
+let gameState = { puzzleIndex:0, timeLeft:300, started:false, over:false, score:0 };
+const TOTAL_TIME = 300;
 let PUZZLES = [];
 let timerInterval;
 
@@ -960,7 +879,7 @@ function startAsOperator() {
     conn = c; setupConn();
     document.getElementById('wait-status').textContent = 'AGENT ONLINE — INITIATING';
     document.getElementById('wait-status').className = 'status-line ok';
-    conn.on('open', () => setTimeout(()=>startGame(), 400));
+    setTimeout(()=>startGame(), 1000);
   });
   peer.on('error', e => log('ERROR: '+e.type, 'bad'));
 }
@@ -1005,107 +924,14 @@ function rndId() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  SOLO TEST MODE
-// ═══════════════════════════════════════════════════════════
-let soloMode = false;
-
-function startSoloMode() {
-  initAudio();
-  soloMode = true;
-  myRole = 'both';
-  PUZZLES = buildPuzzles();
-  gameState = { puzzleIndex:0, timeLeft:TOTAL_TIME, started:true, over:false, score:0 };
-
-  document.getElementById('timer-bar-wrap').style.opacity = '1';
-  showScreen('screen-solo');
-  soloRenderSteps();
-  soloRenderPuzzle(0);
-  updateTimerDisplay();
-  soloStartTimer();
-}
-
-function soloLog(msg, type, side) {
-  // side: 'agent' | 'operator' | 'both'
-  if (side === 'agent' || side === 'both') {
-    const b = document.getElementById('solo-log-agent');
-    if (b) { const d=document.createElement('div'); d.className='log-line '+type; d.textContent='> '+msg; b.appendChild(d); b.scrollTop=b.scrollHeight; }
-  }
-  if (side === 'operator' || side === 'both') {
-    const b = document.getElementById('solo-log-operator');
-    if (b) { const d=document.createElement('div'); d.className='log-line '+type; d.textContent='> '+msg; b.appendChild(d); b.scrollTop=b.scrollHeight; }
-  }
-}
-
-function soloStartTimer() {
-  timerInterval = setInterval(() => {
-    if (gameState.over) { clearInterval(timerInterval); return; }
-    gameState.timeLeft--;
-    updateTimerDisplay();
-    if (gameState.timeLeft % 10 === 0 && gameState.timeLeft < 90) playTick();
-    if (gameState.timeLeft === 90) triggerSiren();
-    if (gameState.timeLeft === 45) { triggerSiren(); shake(document.getElementById('app-inner')); }
-    if (gameState.timeLeft <= 0) {
-      clearInterval(timerInterval);
-      showVerdict(false, 'TIMER EXPIRED');
-    }
-  }, 1000);
-}
-
-function soloRenderSteps() {
-  ['solo-agent-steps','solo-operator-steps'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.innerHTML = '';
-    PUZZLES.forEach((_,i) => {
-      const d = document.createElement('div');
-      d.className = 'step-dot'+(i<gameState.puzzleIndex?' done':i===gameState.puzzleIndex?' current':'');
-      el.appendChild(d);
-    });
-  });
-}
-
-function soloRenderPuzzle(idx) {
-  const p = PUZZLES[idx];
-  const modNum = String(idx+1).padStart(2,'0');
-  p._modNum = modNum;
-
-  const aEl = document.getElementById('solo-agent-area');
-  const oEl = document.getElementById('solo-operator-area');
-  if (aEl) { aEl.innerHTML = p.agentHTML(p.data, modNum); if (p.agentInit) setTimeout(()=>p.agentInit(p.data), 50); }
-  if (oEl) { oEl.innerHTML = p.operatorHTML(p.data, modNum); }
-}
-
-function soloOnPuzzleSolved() {
-  const idx = gameState.puzzleIndex;
-  gameState.score += Math.ceil(gameState.timeLeft / 10);
-  soloLog('MODULE '+(idx+1)+' CLEARED', 'good', 'both');
-  playSuccess();
-
-  const next = idx + 1;
-  if (next >= PUZZLES.length) {
-    showVerdict(true, 'ALL MODULES CLEARED');
-    return;
-  }
-  gameState.puzzleIndex = next;
-  soloRenderSteps();
-  soloRenderPuzzle(next);
-}
-
-// updateTimerDisplay needs to handle solo timer text elements too
-// (patched below in updateTimerDisplay)
-
-// ═══════════════════════════════════════════════════════════
 //  GAME FLOW
 // ═══════════════════════════════════════════════════════════
 function startGame() {
   PUZZLES = buildPuzzles();
   gameState = { puzzleIndex:0, timeLeft:TOTAL_TIME, started:true, over:false, score:0 };
-  document.getElementById('timer-bar-wrap').style.opacity = '1';
-  document.getElementById('timer-bar-wrap').style.transition = 'opacity 0.5s';
   showScreen(myRole==='agent' ? 'screen-agent' : 'screen-operator');
   renderSteps();
   renderPuzzle(0);
-  updateTimerDisplay();
   startTimer();
   if (myRole==='operator') send({type:'start'});
 }
@@ -1133,7 +959,7 @@ function startTimer() {
     gameState.timeLeft--;
     send({type:'tick', t:gameState.timeLeft});
     updateTimerDisplay();
-    if (gameState.timeLeft % 10 === 0 && gameState.timeLeft < 90) playTick();
+    if (gameState.timeLeft % 10 === 0 && gameState.timeLeft < 60) playTick();
     if (gameState.timeLeft <= 0) {
       clearInterval(timerInterval);
       triggerGameOver(false, 'TIMER EXPIRED');
@@ -1157,16 +983,15 @@ function updateTimerDisplay() {
   const mins = Math.floor(gameState.timeLeft/60);
   const secs = String(gameState.timeLeft%60).padStart(2,'0');
   const txt = mins+':'+secs;
-  const cls = gameState.timeLeft < 45 ? 'time-critical' : '';
-  ['agent-timer-text','operator-timer-text','solo-agent-timer'].forEach(id => {
+  const cls = gameState.timeLeft < 30 ? 'time-critical' : '';
+  ['agent-timer-text','operator-timer-text'].forEach(id => {
     const el = document.getElementById(id);
     if (el) { el.textContent = txt; el.className = cls; }
   });
 
-  if (gameState.timeLeft === 90) triggerSiren();
-  if (gameState.timeLeft === 45) { triggerSiren(); shake(document.getElementById('app-inner')); }
+  if (gameState.timeLeft === 60) triggerSiren();
+  if (gameState.timeLeft === 30) { triggerSiren(); shake(document.getElementById('app-inner')); }
 }
-
 
 function triggerSiren() {
   const s = document.getElementById('siren');
@@ -1191,7 +1016,7 @@ function onPuzzleSolved(local) {
 
   const next = idx+1;
   if (next >= PUZZLES.length) {
-    if (myRole==='operator' || myRole==='both') triggerGameOver(true,'ALL MODULES CLEARED');
+    if (myRole==='operator') triggerGameOver(true,'ALL MODULES CLEARED');
     return;
   }
   gameState.puzzleIndex = next;
@@ -1263,21 +1088,6 @@ function submitAnswer(val) {
   const p = PUZZLES[gameState.puzzleIndex];
   const clean = String(val).trim().toUpperCase().replace(/\s+/g,'');
   const expected = String(p.answer(p.data)).toUpperCase().replace(/\s+/g,'');
-
-  if (soloMode) {
-    soloLog('SUBMITTED: '+clean, 'event', 'agent');
-    if (clean === expected) {
-      soloLog('CORRECT', 'good', 'both');
-      soloOnPuzzleSolved();
-    } else {
-      triggerSiren(); playFail(); shake(document.getElementById('app-inner'));
-      soloLog('WRONG — PENALTY -30s', 'bad', 'both');
-      gameState.timeLeft = Math.max(0, gameState.timeLeft - 30);
-      updateTimerDisplay();
-    }
-    return;
-  }
-
   send({type:'agent_log', text:'AGENT SUBMITS: '+clean});
   log('SUBMITTED: '+clean, 'event', 'log-box-agent');
 
